@@ -14,7 +14,7 @@ Because godot-playtester is hosted on a remote machine, before using that MCP to
 
 Then go to:
 
-`/opt/projects/TheInfiniteHouse`
+`/opt/projects/theinfinitehouse`
 
 and run:
 

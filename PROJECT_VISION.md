@@ -1086,3 +1086,7 @@ You are responsible for turning this specification into a functioning game.
 If the existing project contains unrelated prototype code, evaluate whether it is useful. Reuse it when appropriate; otherwise replace it with a clean architecture.
 
 Do not wait for further instructions unless absolutely necessary.
+
+Proceed in small, reliable increments.
+
+Stop after the current improvement is properly implemented and validated. Wait for the user to say **continue** before beginning the next major improvement.
