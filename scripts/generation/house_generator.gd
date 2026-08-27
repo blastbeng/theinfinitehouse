@@ -209,15 +209,16 @@ static func _try_generate(rng: RandomNumberGenerator, eff_seed: int) -> Dictiona
 		var b: Dictionary = best_pair["b"]
 
 		var path := _corridor_path(rng, a["center"], b["center"])
+		# Find the doorway before carving so we can tell whether there was a wall.
+		var door_cell := _door_cell_for_entry(path, b["rect"])
+		var had_wall: bool = door_cell != Vector2i(-1, -1) and grid[door_cell.y][door_cell.x] == WALL
 		for cell in path:
 			if grid[cell.y][cell.x] == WALL:
 				grid[cell.y][cell.x] = FLOOR
 				corridor_cells.append(cell)
 
-		# Door where the corridor meets room b's wall (only if there is a wall).
-		var door_cell := _door_at_entry(path, b["rect"])
-		if door_cell != Vector2i(-1, -1) and grid[door_cell.y][door_cell.x] == WALL \
-				and not door_cells.has(door_cell):
+		# Door where the corridor crosses room b's wall (only if there was a wall).
+		if had_wall and not door_cells.has(door_cell):
 			grid[door_cell.y][door_cell.x] = DOOR
 			door_cells.append(door_cell)
 			doors.append({"id": doors.size(), "cell": door_cell, "rooms": [a["id"], b["id"]]})
@@ -427,13 +428,15 @@ static func _line(a: Vector2i, b: Vector2i) -> Array[Vector2i]:
 	return cells
 
 
-static func _door_at_entry(path: Array, room_rect: Rect2i) -> Vector2i:
-	for i in range(path.size() - 1, -1, -1):
+static func _door_cell_for_entry(path: Array, room_rect: Rect2i) -> Vector2i:
+	# The doorway is the wall cell the path crosses when it enters the room:
+	# the last path cell outside the rect, immediately before the first cell inside.
+	for i in range(path.size() - 1, 0, -1):
 		var c: Vector2i = path[i]
 		if not room_rect.has_point(c):
 			continue
-		if i == 0 or not room_rect.has_point(path[i - 1]):
-			return c
+		if not room_rect.has_point(path[i - 1]):
+			return path[i - 1]
 	return Vector2i(-1, -1)
 
 

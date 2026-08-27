@@ -48,6 +48,16 @@ func _validate(layout: Dictionary) -> Array:
 	if not _in_bounds(ec, gw, gh) or grid[ec.y][ec.x] != HouseGenerator.DOOR:
 		problems.append("exit not a door")
 
+	# A multi-room house must have doors, and every door cell must be a DOOR.
+	var rooms: Array = layout["rooms"]
+	var doors: Array = layout["doors"]
+	if rooms.size() > 1 and doors.is_empty():
+		problems.append("no doors in multi-room house")
+	for d in doors:
+		var dc: Vector2i = d["cell"]
+		if not _in_bounds(dc, gw, gh) or grid[dc.y][dc.x] != HouseGenerator.DOOR:
+			problems.append("door %d not on a DOOR cell" % d["id"])
+
 	# BFS from spawn over FLOOR | DOOR.
 	var seen := {}
 	var queue: Array = [sc]
