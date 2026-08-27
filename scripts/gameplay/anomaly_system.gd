@@ -236,7 +236,7 @@ func _run_furniture_shift() -> bool:
 	var item = items[_rng.randi_range(0, items.size() - 1)]
 	var from_cell := _cell_of(item.position)
 	var room := _room_containing(from_cell)
-	if room == null:
+	if room.is_empty():
 		return false
 	var rrect: Rect2i = room["rect"]
 	var w: int = item.size_cells.x
@@ -297,7 +297,7 @@ func validate() -> Array:
 						problems.append("furniture overlap at %s" % str(k))
 					occupied[k] = true
 			var room := _room_containing(oc)
-			if room == null:
+			if room.is_empty():
 				problems.append("furniture outside its room: %s" % str(oc))
 			elif not (room["rect"] as Rect2i).has_point(Vector2i(oc.x + o.size_cells.x - 1, oc.y + o.size_cells.y - 1)):
 				problems.append("furniture escapes room rect: %s" % str(oc))
@@ -318,7 +318,7 @@ func _build_reserved(layout: Dictionary) -> Dictionary:
 		for x in gw:
 			if grid[y][x] != HouseGenerator.FLOOR:
 				continue
-			if _room_containing(Vector2i(x, y)) != null:
+			if not _room_containing(Vector2i(x, y)).is_empty():
 				continue
 			reserved[Vector2i(x, y)] = true
 			for n in _neighbors(Vector2i(x, y)):
@@ -347,11 +347,11 @@ func _fits_at(at: Vector2i, w: int, h: int, occupied: Dictionary) -> bool:
 	return true
 
 
-func _room_containing(cell: Vector2i) -> Variant:
+func _room_containing(cell: Vector2i) -> Dictionary:
 	for r in _layout["rooms"]:
 		if (r["rect"] as Rect2i).has_point(cell):
 			return r
-	return null
+	return {}
 
 
 func _cell_of(p: Vector2) -> Vector2i:
