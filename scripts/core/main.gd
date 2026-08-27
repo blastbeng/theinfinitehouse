@@ -4,6 +4,7 @@ extends Node2D
 
 const HouseGenerator := preload("res://scripts/generation/house_generator.gd")
 const ObjectiveSystem := preload("res://scripts/gameplay/objective_system.gd")
+const AnomalySystem := preload("res://scripts/gameplay/anomaly_system.gd")
 const PlayerScene: PackedScene = preload("res://scenes/player.tscn")
 
 enum State { TITLE, RUNNING, PAUSED, ENDED }
@@ -15,6 +16,7 @@ var run_time := 0.0
 var world: Node2D
 var player: CharacterBody2D
 var objective: RefCounted
+var anomaly: Node
 
 # HUD
 var hud_layer: CanvasLayer
@@ -112,6 +114,10 @@ func start_run(seed: int) -> void:
 		d.escape_requested.connect(_on_escape_requested)
 	player.prompt_changed.connect(_on_prompt_changed)
 
+	anomaly = AnomalySystem.new()
+	world.add_child(anomaly)
+	anomaly.start_run(seed, layout, house, player)
+
 	state = State.RUNNING
 	title_layer.visible = false
 	pause_layer.visible = false
@@ -127,11 +133,14 @@ func _clear_world() -> void:
 		c.free()
 	player = null
 	objective = null
+	anomaly = null
 
 
 func end_run(result: String) -> void:
 	state = State.ENDED
 	get_tree().paused = false
+	if anomaly:
+		anomaly.stop_run()
 	hud_layer.visible = false
 	_show_end(result)
 
