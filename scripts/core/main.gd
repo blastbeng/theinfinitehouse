@@ -37,7 +37,7 @@ func _ready() -> void:
 	_setup_input()
 	world = Node2D.new()
 	world.name = "World"
-	world.process_mode = Node.PROCESS_MODE_PAUSED
+	world.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	add_child(world)
 	_build_hud()
 	_build_title()
@@ -73,7 +73,9 @@ func _add_action(action: String, keys: Array) -> void:
 		return
 	InputMap.add_action(action)
 	for k in keys:
-		InputMap.action_add_key(action, k)
+		var ev := InputEventKey.new()
+		ev.keycode = k
+		InputMap.action_add_event(action, ev)
 
 
 # --- run lifecycle ----------------------------------------------------------

@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 MCPGameBridge="res://addons/godot_mcp/game_bridge/mcp_game_bridge.gd"
 
+[debug]
+
+gdscript/warnings/inference_on_variant=1
+
 [display]
 
 window/size/viewport_width=1280
@@ -43,5 +47,5 @@ port_override=6550
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.02, 0.02, 0.025, 1)
 rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(0.02, 0.02, 0.025, 1)
