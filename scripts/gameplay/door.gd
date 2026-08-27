@@ -12,6 +12,7 @@ var locked := false
 var is_open := false
 
 var _body: StaticBody2D
+var _shape: CollisionShape2D
 
 
 func _ready() -> void:
@@ -19,17 +20,17 @@ func _ready() -> void:
 	if is_exit:
 		add_to_group("exit_door")
 	_body = StaticBody2D.new()
-	var shape := CollisionShape2D.new()
+	_shape = CollisionShape2D.new()
 	var rect_shape := RectangleShape2D.new()
 	rect_shape.size = Vector2(TILE, TILE)
-	shape.shape = rect_shape
-	_body.add_child(shape)
+	_shape.shape = rect_shape
+	_body.add_child(_shape)
 	add_child(_body)
 	_apply_state()
 
 
 func _apply_state() -> void:
-	_body.collision = not is_open
+	_shape.disabled = is_open
 
 
 func toggle() -> void:
