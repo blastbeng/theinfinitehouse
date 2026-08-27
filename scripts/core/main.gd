@@ -37,7 +37,8 @@ func _ready() -> void:
 	_setup_input()
 	world = Node2D.new()
 	world.name = "World"
-	world.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	# Process normally, freeze while the tree is paused (pause menu).
+	world.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(world)
 	_build_hud()
 	_build_title()
