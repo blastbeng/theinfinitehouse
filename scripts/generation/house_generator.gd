@@ -132,7 +132,7 @@ static func build_house(layout: Dictionary) -> Node2D:
 		var light := PointLight2D.new()
 		light.texture = light_tex
 		light.texture_scale = l["scale"]
-		light.light_energy = l["energy"]
+		light.energy = l["energy"]
 		light.color = l["color"]
 		light.position = l["pos"]
 		if l["flicker"]:

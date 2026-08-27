@@ -16,7 +16,7 @@ func _ready() -> void:
 	var light := PointLight2D.new()
 	light.texture = LightUtils.make_radial_texture(64, 1.4)
 	light.texture_scale = 1.6
-	light.light_energy = 0.9
+	light.energy = 0.9
 	light.color = Color(1.0, 0.85, 0.45)
 	add_child(light)
 

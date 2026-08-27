@@ -1,7 +1,8 @@
 extends SceneTree
 ## Headless multi-seed generation test.
 ## Run: godot --headless -s res://tests/generation_test.gd [seed_count]
-## Validates spawn, key and exit placement plus BFS reachability for every seed.
+## Validates spawn, key and exit placement plus BFS reachability for every
+## seed, and builds the full house node tree to catch construction errors.
 
 const HouseGenerator := preload("res://scripts/generation/house_generator.gd")
 
@@ -17,6 +18,8 @@ func _initialize() -> void:
 		var seed := 1000 + i * 97
 		var layout := HouseGenerator.generate_layout(seed)
 		var problems := _validate(layout)
+		if not layout.is_empty():
+			problems.append_array(_validate_build(layout))
 		if not problems.is_empty():
 			_failures += 1
 			print("FAIL seed %d: %s" % [seed, ", ".join(problems)])
@@ -67,6 +70,42 @@ func _validate(layout: Dictionary) -> Array:
 		if not seen.has(rc):
 			problems.append("room %d center unreachable" % r["id"])
 	return problems
+
+
+func _validate_build(layout: Dictionary) -> Array:
+	var problems: Array = []
+	var house := HouseGenerator.build_house(layout)
+	if house == null:
+		return ["build_house returned null"]
+	root.add_child(house)
+	var lights := 0
+	var bodies := 0
+	var interactables := 0
+	for n in _walk(house):
+		if n is PointLight2D:
+			lights += 1
+			if (n as PointLight2D).texture == null:
+				problems.append("light without texture")
+		elif n is StaticBody2D:
+			bodies += 1
+		if n.has_method("interact"):
+			interactables += 1
+	if lights < 2:
+		problems.append("too few lights (%d)" % lights)
+	if bodies < 1:
+		problems.append("no wall bodies")
+	if interactables < 2:
+		problems.append("too few interactables (%d)" % interactables)
+	house.get_parent().remove_child(house)
+	house.free()
+	return problems
+
+
+func _walk(n: Node) -> Array:
+	var out: Array = [n]
+	for c in n.get_children():
+		out.append_array(_walk(c))
+	return out
 
 
 func _cell_of(p: Vector2) -> Vector2i:
