@@ -112,6 +112,9 @@ func start_run(seed: int) -> void:
 	player.prompt_changed.connect(_on_prompt_changed)
 
 	state = State.RUNNING
+	title_layer.visible = false
+	pause_layer.visible = false
+	end_layer.visible = false
 	hud_layer.visible = true
 	prompt_label.text = ""
 	_update_hud_labels()
